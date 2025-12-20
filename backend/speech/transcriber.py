@@ -7,7 +7,12 @@ model = WhisperModel(
 )
 
 def transcribe_audio(audio_path: str) -> str:
-    segments, info = model.transcribe(audio_path)
+    segments, info = model.transcribe(
+        audio_path,
+        language="en",
+        beam_size=5,
+        condition_on_previous_text=False
+    )
 
     text = []
     for segment in segments:
