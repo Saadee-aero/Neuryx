@@ -5,7 +5,7 @@ import queue
 from scipy.io.wavfile import write
 from datetime import datetime
 from pathlib import Path
-import os
+
 
 class AudioManager:
     def __init__(self):

@@ -1,4 +1,4 @@
-import os
+
 from pathlib import Path
 import shutil
 from faster_whisper import download_model

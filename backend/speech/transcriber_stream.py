@@ -1,7 +1,7 @@
 # backend/speech/transcriber_stream.py
 
 import numpy as np
-import time
+
 from faster_whisper import WhisperModel
 
 class StreamingTranscriber:
