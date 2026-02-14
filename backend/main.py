@@ -1,5 +1,8 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 from backend.speech.audio_manager import AudioManager
 from backend.speech.transcriber import transcribe_audio
 from backend.speech.transcriber_stream import StreamingTranscriber
@@ -14,6 +17,9 @@ logger = get_logger("backend.main")
 
 app = FastAPI(title="NEURYX")
 app.include_router(models.router)
+
+# Serve built frontend
+FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "dist")
 
 # CORS for frontend
 app.add_middleware(
@@ -36,9 +42,8 @@ async def shutdown_event():
     logger.info("Neuryx Backend Shutting Down...")
 
 @app.get("/")
-def health_check():
-    logger.debug("Health check requested")
-    return {"status": "ok"}
+def serve_frontend():
+    return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
 
 @app.post("/record/start")
 def start_recording():
@@ -152,3 +157,9 @@ async def websocket_endpoint(
         # Explicit clean up if needed
         del transcriber
         logger.info("Cleaned up transcriber session")
+
+# Mount static assets AFTER all API/WS routes (so routes take priority)
+if os.path.isdir(FRONTEND_DIR):
+    app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIR, "assets")), name="static-assets")
+    app.mount("/", StaticFiles(directory=FRONTEND_DIR), name="static-root")
+

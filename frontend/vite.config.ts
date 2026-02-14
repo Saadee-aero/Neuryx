@@ -8,6 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/record': 'http://127.0.0.1:8000',
+      '/models': 'http://127.0.0.1:8000',
       '/stream': {
         target: 'ws://127.0.0.1:8000',
         ws: true,

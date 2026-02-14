@@ -1,0 +1,6 @@
+{
+  "site_package_search_strategy": "pep503",
+  "search_path_mode": "project",
+  "source_directories": ["."],
+  "site_roots": ["venv/Lib/site-packages"]
+}

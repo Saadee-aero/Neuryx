@@ -1,188 +1,28 @@
-import { useState, useRef, useEffect } from 'react'
-import { Mic, Square, Radio, FileText, Activity, Settings, X, Download, Languages } from 'lucide-react'
+import { useState, useRef, useCallback } from 'react'
+import { Mic, Square, Settings, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ModelManager } from './components/ModelManager'
 
-type Mode = 'batch' | 'stream'
-
-interface TranscriptionResult {
-  file: string;
-  transcript: string;
-  timestamp: string;
-}
-
 const LANGUAGES = [
   { code: 'en', name: 'English', prompt: '' },
-  { code: 'ur', name: 'Urdu', prompt: '' },
-  { code: 'ur', name: 'Roman Urdu', prompt: 'Hum roman urdu mein likh rahe hain. Transcribe in Roman Urdu.' },
+  { code: 'ur', name: 'اردو', prompt: '' },
+  { code: 'ur', name: 'Roman Urdu', prompt: 'Yeh roman urdu mein likho. Transcribe in Roman Urdu using Latin script.' },
 ]
 
 function App() {
-  const [mode, setMode] = useState<Mode>('batch')
   const [isRecording, setIsRecording] = useState(false)
-  const [status, setStatus] = useState('Ready')
+  const [status, setStatus] = useState('Tap to speak')
   const [liveText, setLiveText] = useState('')
-  const [history, setHistory] = useState<TranscriptionResult[]>([])
-  const [showSettings, setShowSettings] = useState(false)
   const [selectedLang, setSelectedLang] = useState(LANGUAGES[0])
+  const [showSettings, setShowSettings] = useState(false)
 
-  // Refs for Streaming
+  // Refs for streaming
   const socketRef = useRef<WebSocket | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const processorRef = useRef<ScriptProcessorNode | null>(null)
   const mediaStreamRef = useRef<MediaStream | null>(null)
 
-  const startBatchRecording = async () => {
-    try {
-      setStatus('Recording on Server...')
-      const res = await fetch('/record/start', { method: 'POST' })
-      const data = await res.json()
-      if (data.status === 'started') {
-        setIsRecording(true)
-      } else {
-        setStatus(`Error: ${data.status}`)
-      }
-    } catch (e) {
-      console.error(e)
-      setStatus('Connection Failed')
-    }
-  }
-
-  const stopBatchRecording = async () => {
-    try {
-      setStatus('Processing...')
-      const res = await fetch('/record/stop', { method: 'POST' })
-      const data = await res.json()
-      if (data.status === 'success') {
-        setHistory(prev => [{
-          file: data.file,
-          transcript: data.transcript,
-          timestamp: new Date().toLocaleTimeString()
-        }, ...prev])
-        setStatus('Ready')
-      } else {
-        setStatus(`Error: ${data.message || 'Unknown'}`)
-      }
-      setIsRecording(false)
-    } catch (e) {
-      console.error(e)
-      setStatus('Error stopping')
-      setIsRecording(false)
-    }
-  }
-
-  const startStreaming = async () => {
-    try {
-      setStatus('Connecting to Stream...')
-
-      // Pass language and prompt in URL
-      const params = new URLSearchParams({
-        language: selectedLang.code,
-        prompt: selectedLang.prompt
-      })
-      const socket = new WebSocket(`ws://localhost:8000/stream?${params.toString()}`)
-      socket.binaryType = 'arraybuffer'
-
-      socket.onopen = async () => {
-        setStatus('Listening...')
-        setIsRecording(true)
-        setLiveText('')
-
-        try {
-          // Setup Audio with explicit downsampling
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-          mediaStreamRef.current = stream
-
-          // Create Context - browser will allow this sample rate
-          const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)()
-          audioContextRef.current = audioCtx
-
-          const source = audioCtx.createMediaStreamSource(stream)
-
-          // Create a second context strictly for 16kHz if needed, but easier is to just resample manually 
-          // or rely on the backend. But since we identified sample rate as issue:
-          // We will use a ScriptProcessor and downsample if needed, 
-          // OR usually WebSocket expects raw PCM. 
-          // Simple fix: OfflineAudioContext or just simple decimation if ratio is integer.
-
-          // BETTER FIX: use AudioContext with sampleRate: 16000 options if browser supports it
-          // OR let backend handle ANY sample rate? Backend relies on faster-whisper which expects 16k usually.
-
-          // Let's try creating a 16kHz context specifically. 
-          // Some browsers might not support it, but most modern ones do or resample automatically.
-          // BUT `getUserMedia` stream tracks conform to hardware.
-          // So we need: Source(48k) -> AudioCtx(48k) -> ScriptProcessor -> Downsample -> Send.
-
-          // Actually, let's try a simpler approach first:
-          // Just set the AudioContext to 16000. Chrome/Firefox usually handle the resampling from Mic(48k) to Ctx(16k) automatically.
-          // If the previous attempt failed, maybe it was because we sent FLOAT32 but didn't verify backend handling?
-          // Backend expects float32 in numpy.
-
-          // Let's stick to 16k context property.
-
-        } catch (err) {
-          console.error("Error setting up audio", err);
-          setStatus("Audio Error");
-          return;
-        }
-
-        const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 })
-        audioContextRef.current = audioCtx
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-        mediaStreamRef.current = stream
-        const source = audioCtx.createMediaStreamSource(stream)
-
-        // 4096 frames @ 16kHz = ~0.25s
-        const processor = audioCtx.createScriptProcessor(4096, 1, 1)
-
-        processor.onaudioprocess = (e) => {
-          if (socket.readyState === WebSocket.OPEN) {
-            const inputData = e.inputBuffer.getChannelData(0)
-            // Send as float32 bytes
-            socket.send(inputData.buffer)
-          }
-        }
-
-        source.connect(processor)
-        processor.connect(audioCtx.destination)
-        processorRef.current = processor
-      }
-
-      socket.onmessage = (event) => {
-        setLiveText(event.data)
-      }
-
-      socket.onclose = () => {
-        setIsRecording(false)
-        setStatus('Ready')
-        cleanupAudio()
-      }
-
-      socketRef.current = socket
-
-    } catch (e) {
-      console.error(e)
-      setStatus('Microphone Error')
-    }
-  }
-
-  const stopStreaming = () => {
-    if (socketRef.current) {
-      socketRef.current.close()
-    }
-    cleanupAudio()
-    setIsRecording(false)
-    setStatus('Ready')
-    if (liveText) {
-      setHistory(prev => [{
-        file: 'Stream Session',
-        transcript: liveText,
-        timestamp: new Date().toLocaleTimeString()
-      }, ...prev])
-    }
-  }
-
-  const cleanupAudio = () => {
+  const cleanupAudio = useCallback(() => {
     if (processorRef.current) {
       processorRef.current.disconnect()
       processorRef.current = null
@@ -195,32 +35,123 @@ function App() {
       mediaStreamRef.current.getTracks().forEach(track => track.stop())
       mediaStreamRef.current = null
     }
+  }, [])
+
+  const startRecording = async () => {
+    try {
+      setStatus('Connecting...')
+      setLiveText('')
+
+      // Build WebSocket URL using Vite proxy (relative path)
+      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+      const params = new URLSearchParams({
+        language: selectedLang.code,
+        ...(selectedLang.prompt ? { prompt: selectedLang.prompt } : {})
+      })
+      const wsUrl = `${wsProtocol}//${window.location.host}/stream?${params.toString()}`
+
+      const socket = new WebSocket(wsUrl)
+      socket.binaryType = 'arraybuffer'
+      socketRef.current = socket
+
+      socket.onopen = async () => {
+        setStatus('Listening...')
+        setIsRecording(true)
+
+        try {
+          // Create AudioContext at 16kHz for Whisper
+          const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 })
+          audioContextRef.current = audioCtx
+
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              channelCount: 1,
+              echoCancellation: true,
+              noiseSuppression: true,
+            }
+          })
+          mediaStreamRef.current = stream
+
+          const source = audioCtx.createMediaStreamSource(stream)
+
+          // 4096 frames @ 16kHz ≈ 0.256s per chunk
+          const processor = audioCtx.createScriptProcessor(4096, 1, 1)
+          processorRef.current = processor
+
+          processor.onaudioprocess = (e) => {
+            if (socket.readyState === WebSocket.OPEN) {
+              const inputData = e.inputBuffer.getChannelData(0)
+              // Send raw float32 PCM bytes
+              socket.send(inputData.buffer)
+            }
+          }
+
+          source.connect(processor)
+          processor.connect(audioCtx.destination)
+        } catch (err) {
+          console.error('Microphone error:', err)
+          setStatus('Microphone blocked')
+          socket.close()
+        }
+      }
+
+      socket.onmessage = (event) => {
+        setLiveText(event.data)
+      }
+
+      socket.onerror = () => {
+        setStatus('Connection failed')
+        setIsRecording(false)
+        cleanupAudio()
+      }
+
+      socket.onclose = () => {
+        setIsRecording(false)
+        setStatus('Tap to speak')
+        cleanupAudio()
+      }
+
+    } catch (e) {
+      console.error(e)
+      setStatus('Error')
+    }
+  }
+
+  const stopRecording = () => {
+    if (socketRef.current) {
+      socketRef.current.close()
+      socketRef.current = null
+    }
+    cleanupAudio()
+    setIsRecording(false)
+    setStatus('Tap to speak')
   }
 
   const toggleRecording = () => {
     if (isRecording) {
-      if (mode === 'batch') stopBatchRecording()
-      else stopStreaming()
+      stopRecording()
     } else {
-      if (mode === 'batch') startBatchRecording()
-      else startStreaming()
+      startRecording()
     }
   }
 
   return (
-    <div className="min-h-screen p-8 flex flex-col items-center relative">
-      <header className="mb-12 text-center relative z-10 w-full max-w-2xl flex justify-between items-end">
-        <div className="flex-1"></div>
-        <div className="text-center">
-          <h1 className="text-5xl font-bold tracking-tighter mb-2">
-            <span className="title-gradient">NEURYX</span>
-          </h1>
-          <p className="text-text-secondary">Local Neural Speech Engine</p>
+    <div className="app-container">
+      {/* Background glow */}
+      <div className={`bg-glow ${isRecording ? 'recording' : ''}`} />
+
+      {/* Header */}
+      <header className="app-header">
+        <div className="header-left" />
+        <div className="header-center">
+          <h1 className="app-title">NEURYX</h1>
+          <p className="app-subtitle">Local Neural Speech Engine</p>
         </div>
-        <div className="flex-1 flex justify-end">
+        <div className="header-right">
           <button
             onClick={() => setShowSettings(true)}
-            className="p-2 bg-slate-800 rounded-full hover:bg-slate-700 hover:text-white transition text-slate-400"
+            className="settings-btn"
+            aria-label="Settings"
           >
             <Settings size={20} />
           </button>
@@ -234,7 +165,7 @@ function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="modal-overlay"
             onClick={() => setShowSettings(false)}
           >
             <motion.div
@@ -242,13 +173,13 @@ function App() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={e => e.stopPropagation()}
-              className="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-lg shadow-2xl overflow-hidden"
+              className="modal-content"
             >
-              <div className="p-4 border-b border-slate-800 flex justify-between items-center">
-                <h2 className="text-xl font-bold flex items-center gap-2"><Settings size={20} /> Settings</h2>
-                <button onClick={() => setShowSettings(false)} className="hover:bg-slate-800 p-1 rounded-full"><X size={20} /></button>
+              <div className="modal-header">
+                <h2><Settings size={18} /> Settings</h2>
+                <button onClick={() => setShowSettings(false)} className="modal-close"><X size={18} /></button>
               </div>
-              <div className="p-6">
+              <div className="modal-body">
                 <ModelManager />
               </div>
             </motion.div>
@@ -256,112 +187,65 @@ function App() {
         )}
       </AnimatePresence>
 
-      <div className="glass-panel w-full max-w-2xl flex flex-col gap-6">
-        {/* Controls */}
-        <div className="flex flex-col md:flex-row justify-between items-center p-2 bg-slate-800/50 rounded-lg gap-4">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setMode('batch')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${mode === 'batch' ? 'bg-blue-600 text-white' : 'hover:bg-slate-700'}`}
-            >
-              <FileText size={18} /> Batch
-            </button>
-            <button
-              onClick={() => setMode('stream')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${mode === 'stream' ? 'bg-purple-600 text-white' : 'hover:bg-slate-700'}`}
-            >
-              <Activity size={18} /> Stream
-            </button>
-          </div>
+      {/* Main Card */}
+      <main className="main-card">
 
-          {/* Language Selector */}
-          <div className="flex items-center gap-2 bg-slate-900/50 p-1 rounded">
-            {LANGUAGES.map(lang => (
-              <button
-                key={lang.name}
-                onClick={() => setSelectedLang(lang)}
-                className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${selectedLang.name === lang.name ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-slate-200'}`}
-              >
-                {lang.name}
-              </button>
-            ))}
-          </div>
+        {/* Language Selector */}
+        <div className="lang-selector">
+          {LANGUAGES.map(lang => (
+            <button
+              key={lang.name}
+              onClick={() => { if (!isRecording) setSelectedLang(lang) }}
+              className={`lang-btn ${selectedLang.name === lang.name ? 'active' : ''}`}
+              disabled={isRecording}
+            >
+              {lang.name}
+            </button>
+          ))}
         </div>
 
-        {/* Main Action */}
-        <div className="flex flex-col items-center justify-center py-6">
+        {/* Big Mic Button */}
+        <div className="mic-area">
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.94 }}
             onClick={toggleRecording}
-            className={`
-              w-24 h-24 rounded-full flex items-center justify-center shadow-lg transition-all mb-4
-              ${isRecording
-                ? 'bg-red-500/20 text-red-500 border-2 border-red-500 shadow-red-500/20'
-                : 'bg-blue-500 text-white shadow-blue-500/30 hover:bg-blue-600'}
-            `}
+            className={`mic-btn ${isRecording ? 'recording' : ''}`}
           >
-            {isRecording ? <Square size={32} fill="currentColor" /> : <Mic size={32} />}
+            {isRecording ? (
+              <>
+                <div className="pulse-ring" />
+                <div className="pulse-ring delay" />
+                <Square size={36} fill="currentColor" />
+              </>
+            ) : (
+              <Mic size={36} />
+            )}
           </motion.button>
 
-          <div className="flex items-center gap-2 text-sm text-text-secondary h-6">
-            <div className={`w-2 h-2 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-slate-500'}`} />
-            {status}
+          <div className="status-row">
+            <div className={`status-dot ${isRecording ? 'live' : ''}`} />
+            <span>{status}</span>
           </div>
         </div>
 
-        {/* Live Transcript Area (Stream Mode) */}
-        <AnimatePresence>
-          {mode === 'stream' && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="bg-slate-900/50 p-4 rounded-xl min-h-[100px] border border-slate-700/50"
-            >
-              <h3 className="text-xs font-semibold text-purple-400 mb-2 uppercase tracking-wider flex justify-between">
-                Live Transcript
-                <span className="text-slate-500 normal-case bg-slate-800 px-2 rounded">{selectedLang.name}</span>
-              </h3>
-              <p className="text-lg leading-relaxed text-slate-200 mt-2">
-                {liveText || <span className="text-slate-600 italic">Listening...</span>}
+        {/* Transcript Area */}
+        <div className="transcript-area">
+          <div className="transcript-header">
+            <span className="transcript-label">Transcript</span>
+            <span className="lang-badge">{selectedLang.name}</span>
+          </div>
+          <div className="transcript-body">
+            {liveText ? (
+              <p className="transcript-text">{liveText}</p>
+            ) : (
+              <p className="transcript-placeholder">
+                {isRecording ? 'Listening...' : 'Press the microphone to start'}
               </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* History */}
-      <div className="w-full max-w-2xl mt-12 pb-12">
-        <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-          History <span className="text-xs bg-slate-800 px-2 py-0.5 rounded-full text-slate-400">{history.length}</span>
-        </h2>
-
-        <div className="space-y-4">
-          <AnimatePresence>
-            {history.map((item, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-slate-800/40 border border-slate-700/50 p-4 rounded-lg flex flex-col gap-2 hover:bg-slate-800/60 transition-colors"
-              >
-                <div className="flex justify-between items-start">
-                  <span className="text-xs font-mono text-slate-500">{item.timestamp}</span>
-                  <span className="text-xs bg-slate-700 text-slate-300 px-2 rounded">{item.file.includes('recording') ? 'Batch' : 'Stream'}</span>
-                </div>
-                <p className="text-slate-300">{item.transcript}</p>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-
-          {history.length === 0 && (
-            <div className="text-center py-12 text-slate-600 border border-dashed border-slate-800 rounded-xl">
-              No recordings yet
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }
