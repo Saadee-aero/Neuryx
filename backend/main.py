@@ -101,6 +101,15 @@ async def websocket_endpoint(
             language=language, 
             initial_prompt=prompt if prompt else None
         )
+        
+        # Enable auto-save
+        import datetime
+        import os
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        os.makedirs("transcripts", exist_ok=True)
+        filename = f"transcripts/transcript_{timestamp}.txt"
+        transcriber.set_file_writer(filename)
+        
     except Exception as e:
         logger.error(f"Failed to initialize transcriber: {e}")
         await websocket.close(code=1011)
@@ -151,6 +160,10 @@ async def websocket_endpoint(
         stream_active = False
         metrics = transcriber.get_metrics_summary()
         logger.info(f"Session Ended. Final Metrics: {metrics}")
+        
+        # Close file writer
+        transcriber.close()
+        
         # Explicit clean up if needed
         del transcriber
         logger.info("Cleaned up transcriber session")

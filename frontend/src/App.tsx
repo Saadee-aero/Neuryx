@@ -4,9 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ModelManager } from './components/ModelManager'
 
 const LANGUAGES = [
-  { code: 'en', name: 'English', prompt: 'Hello. How are you? I am fine.' },
-  { code: 'ur', name: 'اردو', prompt: 'السلام علیکم۔ میں ٹھیک ہوں۔ پاکستان۔ اردو زبان۔' },
-  { code: '', name: 'Roman Urdu', prompt: 'Transliterate into Roman Urdu (Latin script). Do not translate. Do not use Urdu script. Example: Kya haal hai? Main theek hoon.' },
+  { code: 'en', name: 'English', prompt: 'Hello. How are you? I am fine. This is a test.' },
+  { code: 'ur', name: 'اردو', prompt: 'السلام علیکم۔ میرا نام ساحر ہے۔ میں Institute of Space Technology سے Aerospace Engineering کر رہا ہوں۔' },
+  { code: '', name: 'Roman Urdu', prompt: 'Mera naam Ali hai. Main Lahore mein rehta hoon. Aaj mausam acha hai. Kya haal hai? Main theek hoon. Aap sunao.' },
 ]
 
 function App() {

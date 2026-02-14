@@ -263,3 +263,73 @@
 2026-02-14 17:15:19,678 | WARNING | backend.speech.transcriber_stream | Slow inference: 5.62s
 2026-02-14 17:15:25,358 | INFO | backend.speech.transcriber_stream | Committed segment: 'ڈینرینگ کا چوٹر سمسٹر ہی میکنے' (Reason: silence)
 2026-02-14 17:15:25,358 | WARNING | backend.speech.transcriber_stream | Slow inference: 5.67s
+2026-02-14 17:32:29,744 | INFO | backend.main | Neuryx Backend Starting...
+2026-02-14 17:32:29,748 | INFO | backend.main | Initial Memory Usage: 92.15 MB
+2026-02-14 17:32:29,748 | INFO | backend.speech.model_loader | Loading Whisper Model: small...
+2026-02-14 17:32:32,148 | INFO | backend.speech.model_loader | Model loaded. RAM increased by 337.52 MB. Total: 429.67 MB
+2026-02-14 17:32:32,150 | INFO | backend.main | Model pre-loaded. Memory: 429.67 MB
+2026-02-14 17:33:12,387 | INFO | backend.main | WebSocket connected: 127.0.0.1 | Lang: ur
+2026-02-14 17:33:12,387 | INFO | backend.speech.transcriber_stream | Requesting Whisper model 'small'...
+2026-02-14 17:33:12,387 | INFO | backend.speech.transcriber_stream | Model ready in 0.00s
+2026-02-14 17:33:19,776 | INFO | backend.speech.transcriber_stream | Committed segment: 'ہلو؟' (Reason: silence)
+2026-02-14 17:33:19,776 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.75s
+2026-02-14 17:33:23,006 | INFO | backend.speech.transcriber_stream | Committed segment: 'میرے نام ہے ساد احمد۔' (Reason: silence)
+2026-02-14 17:33:23,006 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.91s
+2026-02-14 17:33:28,015 | INFO | backend.speech.transcriber_stream | Committed segment: 'میں ٹھیک ہوں۔' (Reason: silence)
+2026-02-14 17:33:28,015 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.80s
+2026-02-14 17:33:31,379 | INFO | backend.speech.transcriber_stream | Committed segment: 'اسٹیٹوٹ آف سپیس ٹیکنالوجی اسلام۔' (Reason: silence)
+2026-02-14 17:33:31,379 | WARNING | backend.speech.transcriber_stream | Slow inference: 2.08s
+2026-02-14 17:33:34,364 | INFO | backend.speech.transcriber_stream | Committed segment: 'ہم بات میں پڑھ رہا ہوں۔' (Reason: silence)
+2026-02-14 17:33:34,368 | WARNING | backend.speech.transcriber_stream | Slow inference: 2.00s
+2026-02-14 17:33:41,387 | INFO | backend.speech.transcriber_stream | Committed segment: 'میں ایرس پیئے۔' (Reason: silence)
+2026-02-14 17:33:41,387 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.85s
+2026-02-14 17:33:44,536 | INFO | backend.speech.transcriber_stream | Committed segment: 'انجینیرن کارون۔' (Reason: silence)
+2026-02-14 17:33:44,537 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.93s
+2026-02-14 17:33:44,537 | INFO | backend.main | Session Stats | RAM: 466.84MB | Avg Inference: 1.030s | Commits: 7
+2026-02-14 17:33:49,581 | INFO | backend.speech.transcriber_stream | Committed segment: 'سلام علیکم۔' (Reason: silence)
+2026-02-14 17:33:49,581 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.87s
+2026-02-14 17:34:14,595 | INFO | backend.main | Session Stats | RAM: 468.24MB | Avg Inference: 0.387s | Commits: 8
+2026-02-14 17:34:17,406 | INFO | backend.speech.transcriber_stream | Committed segment: 'پوک ہی مصدر ہے۔' (Reason: silence)
+2026-02-14 17:34:17,407 | WARNING | backend.speech.transcriber_stream | Slow inference: 2.04s
+2026-02-14 17:34:20,440 | WARNING | backend.speech.transcriber_stream | Slow inference: 2.01s
+2026-02-14 17:34:22,412 | INFO | backend.speech.transcriber_stream | Committed segment: 'مجھو پتا دینہ۔' (Reason: silence)
+2026-02-14 17:34:22,413 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.97s
+2026-02-14 17:34:30,415 | INFO | backend.main | WebSocket disconnected: 127.0.0.1
+2026-02-14 17:34:30,417 | INFO | backend.main | Session Ended. Final Metrics: {'total_chunks': 51, 'avg_inference_time': 0.4230675510331696, 'total_commits': 10, 'avg_stability_cycles': 5.1}
+2026-02-14 17:34:30,419 | INFO | backend.main | Cleaned up transcriber session
+2026-02-14 17:34:47,177 | INFO | backend.main | WebSocket connected: 127.0.0.1 | Lang: 
+2026-02-14 17:34:47,177 | INFO | backend.speech.transcriber_stream | Requesting Whisper model 'small'...
+2026-02-14 17:34:47,177 | INFO | backend.speech.transcriber_stream | Model ready in 0.00s
+2026-02-14 17:34:53,723 | INFO | backend.speech.transcriber_stream | Committed segment: 'Hello.' (Reason: silence)
+2026-02-14 17:34:53,724 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.37s
+2026-02-14 17:34:57,629 | INFO | backend.speech.transcriber_stream | Committed segment: 'ساعد احمد ہے. میں اسٹرچوٹ آفسکتے ہیں.' (Reason: silence)
+2026-02-14 17:34:57,629 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.90s
+2026-02-14 17:35:01,429 | INFO | backend.speech.transcriber_stream | Committed segment: 'Transliterate into Roman Urdu.' (Reason: silence)
+2026-02-14 17:35:01,429 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.80s
+2026-02-14 17:35:05,145 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.71s
+2026-02-14 17:35:09,266 | INFO | backend.speech.transcriber_stream | Committed segment: 'Translating into Roman Urdu.' (Reason: silence)
+2026-02-14 17:35:09,266 | WARNING | backend.speech.transcriber_stream | Slow inference: 4.12s
+2026-02-14 17:35:11,449 | WARNING | backend.speech.transcriber_stream | Slow inference: 2.17s
+2026-02-14 17:35:13,420 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.97s
+2026-02-14 17:35:15,468 | WARNING | backend.speech.transcriber_stream | Slow inference: 2.05s
+2026-02-14 17:35:17,381 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.91s
+2026-02-14 17:35:17,383 | INFO | backend.main | Session Stats | RAM: 472.79MB | Avg Inference: 3.001s | Commits: 4
+2026-02-14 17:35:19,342 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.96s
+2026-02-14 17:35:22,459 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.12s
+2026-02-14 17:35:22,461 | INFO | backend.main | WebSocket disconnected: 127.0.0.1
+2026-02-14 17:35:22,461 | INFO | backend.main | Session Ended. Final Metrics: {'total_chunks': 11, 'avg_inference_time': 2.916260242462158, 'total_commits': 4, 'avg_stability_cycles': 2.75}
+2026-02-14 17:35:22,462 | INFO | backend.main | Cleaned up transcriber session
+2026-02-14 17:35:33,580 | INFO | backend.main | WebSocket connected: 127.0.0.1 | Lang: ur
+2026-02-14 17:35:33,580 | INFO | backend.speech.transcriber_stream | Requesting Whisper model 'small'...
+2026-02-14 17:35:33,580 | INFO | backend.speech.transcriber_stream | Model ready in 0.00s
+2026-02-14 17:35:38,703 | INFO | backend.speech.transcriber_stream | Committed segment: 'ہلو مرنام؟' (Reason: silence)
+2026-02-14 17:35:38,703 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.81s
+2026-02-14 17:35:42,144 | INFO | backend.speech.transcriber_stream | Committed segment: 'ساتھ آمد ہے۔ میں افتیچٹوٹ اسپر۔' (Reason: silence)
+2026-02-14 17:35:42,144 | WARNING | backend.speech.transcriber_stream | Slow inference: 2.17s
+2026-02-14 17:35:45,326 | INFO | backend.speech.transcriber_stream | Committed segment: 'اردو زبان کے ساتھ آمد ہے۔' (Reason: silence)
+2026-02-14 17:35:45,326 | WARNING | backend.speech.transcriber_stream | Slow inference: 2.28s
+2026-02-14 17:35:48,835 | INFO | backend.speech.transcriber_stream | Committed segment: 'اردو زبان کر رہا ہوں۔' (Reason: silence)
+2026-02-14 17:35:48,836 | WARNING | backend.speech.transcriber_stream | Slow inference: 2.72s
+2026-02-14 17:35:51,504 | INFO | backend.main | WebSocket disconnected: 127.0.0.1
+2026-02-14 17:35:51,504 | INFO | backend.main | Session Ended. Final Metrics: {'total_chunks': 7, 'avg_inference_time': 1.2873453412737166, 'total_commits': 4, 'avg_stability_cycles': 1.75}
+2026-02-14 17:35:51,508 | INFO | backend.main | Cleaned up transcriber session

@@ -92,7 +92,10 @@ class StreamingTranscriber:
         # Build prompt: last committed segment + initial prompt
         prompt_parts = []
         if self.committed_segments:
-            prompt_parts.append(self.committed_segments[-1]["text"])
+            # Use last 3 segments for better context without bloat
+            # This balances speed (short prompt) with coherence (knowing previous sentence)
+            recent_context = " ".join([seg["text"] for seg in self.committed_segments[-3:]])
+            prompt_parts.append(recent_context)
         if self.initial_prompt:
             prompt_parts.append(self.initial_prompt)
         effective_prompt = ". ".join(prompt_parts) if prompt_parts else None
@@ -159,9 +162,13 @@ class StreamingTranscriber:
             # Clear buffer to avoid re-transcribing committed text
             self.buffer = np.zeros((0, 1), dtype=np.float32)
             
-            # Cap committed segments to last 20 to prevent memory bloat
-            if len(self.committed_segments) > 20:
-                self.committed_segments = self.committed_segments[-20:]
+            # NOTE: We do NOT delete committed segments anymore to keep history.
+            # Inference speed is preserved by only using last 20 for prompt (see below).
+            
+            # Auto-save to file if writer exists
+            if hasattr(self, 'file_writer') and self.file_writer:
+                self.file_writer.write(f"{full_text}\n")
+                self.file_writer.flush()
             
         else:
             self.current_partial = full_text
@@ -177,6 +184,17 @@ class StreamingTranscriber:
             "committed": self.committed_segments,
             "partial": self.current_partial
         }
+
+    def set_file_writer(self, filename):
+        """Enable auto-saving to a file"""
+        import os
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        self.file_writer = open(filename, "a", encoding="utf-8")
+        logger.info(f"Auto-saving transcript to: {filename}")
+
+    def close(self):
+        if hasattr(self, 'file_writer') and self.file_writer:
+            self.file_writer.close()
 
     def get_metrics_summary(self) -> dict:
         avg_inference = (self.total_inference_time / self.chunk_count) if self.chunk_count > 0 else 0
