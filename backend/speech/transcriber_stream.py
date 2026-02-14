@@ -106,7 +106,7 @@ class StreamingTranscriber:
             vad_filter=True,
             temperature=[0.0, 0.2, 0.4],  # Fallback to creative decoding if high confidence fails
             repetition_penalty=1.1,       # Reduce looping repetitions
-            no_speech_threshold=0.6       # Slightly relaxed silence detection
+            no_speech_threshold=0.4       # More sensitive silence detection (prevent missing words)
         )
         
         segment_list = list(segments)

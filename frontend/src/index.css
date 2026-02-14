@@ -20,7 +20,16 @@
   color: var(--text);
 }
 
-*, *::before, *::after {
+.font-urdu {
+  font-family: 'Jameel Noori Nastaliq', 'Noto Nastaliq Urdu', 'Urdu Typesetting', serif;
+  line-height: 2.0;
+  /* Nastaliq needs more height */
+  font-size: 1.2em;
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -67,6 +76,7 @@ body {
   transition: all 0.8s ease;
   z-index: -1;
 }
+
 .bg-glow.recording {
   background: radial-gradient(circle, var(--red-glow) 0%, transparent 70%);
   width: 500px;
@@ -82,13 +92,17 @@ body {
   justify-content: space-between;
   width: 100%;
 }
-.header-left, .header-right {
+
+.header-left,
+.header-right {
   flex: 0 0 40px;
 }
+
 .header-center {
   text-align: center;
   flex: 1;
 }
+
 .app-title {
   font-size: 2.4rem;
   font-weight: 800;
@@ -100,10 +114,19 @@ body {
   background-clip: text;
   animation: shimmer 4s ease-in-out infinite;
 }
+
 @keyframes shimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
 }
+
 .app-subtitle {
   font-size: 0.8rem;
   color: var(--text-muted);
@@ -120,9 +143,10 @@ body {
   border-radius: 8px;
   transition: color 0.2s, background 0.2s;
 }
+
 .settings-btn:hover {
   color: var(--text);
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* ═══════════════ MAIN CARD ═══════════════ */
@@ -139,8 +163,8 @@ body {
   align-items: center;
   gap: 2rem;
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.03),
-    0 8px 32px rgba(0,0,0,0.4);
+    0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 /* ═══════════════ LANG SELECTOR ═══════════════ */
@@ -148,11 +172,12 @@ body {
 .lang-selector {
   display: flex;
   gap: 4px;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   padding: 4px;
   border-radius: 10px;
   width: fit-content;
 }
+
 .lang-btn {
   padding: 6px 14px;
   border: none;
@@ -165,14 +190,17 @@ body {
   transition: all 0.2s ease;
   white-space: nowrap;
 }
+
 .lang-btn:hover:not(:disabled) {
   color: var(--text);
 }
+
 .lang-btn.active {
   background: rgba(99, 102, 241, 0.2);
   color: #a5b4fc;
   box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
 }
+
 .lang-btn:disabled {
   opacity: 0.5;
   cursor: default;
@@ -206,6 +234,7 @@ body {
     0 4px 20px rgba(99, 102, 241, 0.4),
     0 0 0 0 rgba(99, 102, 241, 0);
 }
+
 .mic-btn:hover {
   box-shadow:
     0 6px 28px rgba(99, 102, 241, 0.5),
@@ -220,6 +249,7 @@ body {
     0 0 24px var(--red-glow),
     0 0 0 0 var(--red-glow);
 }
+
 .mic-btn.recording:hover {
   box-shadow:
     0 0 32px var(--red-glow),
@@ -235,12 +265,21 @@ body {
   opacity: 0;
   animation: pulse-out 2s ease-out infinite;
 }
+
 .pulse-ring.delay {
   animation-delay: 0.8s;
 }
+
 @keyframes pulse-out {
-  0% { transform: scale(0.9); opacity: 0.6; }
-  100% { transform: scale(1.4); opacity: 0; }
+  0% {
+    transform: scale(0.9);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
 }
 
 /* Status */
@@ -252,6 +291,7 @@ body {
   color: var(--text-muted);
   height: 20px;
 }
+
 .status-dot {
   width: 7px;
   height: 7px;
@@ -259,13 +299,22 @@ body {
   background: var(--text-muted);
   transition: background 0.3s;
 }
+
 .status-dot.live {
   background: var(--red);
   animation: blink 1.2s ease-in-out infinite;
 }
+
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
 }
 
 /* ═══════════════ TRANSCRIPT ═══════════════ */
@@ -273,17 +322,19 @@ body {
 .transcript-area {
   width: 100%;
   background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255,255,255,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 14px;
   overflow: hidden;
 }
+
 .transcript-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
+
 .transcript-label {
   font-size: 0.7rem;
   font-weight: 600;
@@ -291,9 +342,10 @@ body {
   letter-spacing: 0.1em;
   color: #818cf8;
 }
+
 .lang-badge {
   font-size: 0.68rem;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text-muted);
   padding: 2px 10px;
   border-radius: 20px;
@@ -305,12 +357,14 @@ body {
   max-height: 300px;
   overflow-y: auto;
 }
+
 .transcript-text {
   font-size: 1.05rem;
   line-height: 1.7;
   color: var(--text);
   text-align: left;
 }
+
 .transcript-placeholder {
   font-size: 0.9rem;
   color: #334155;
@@ -323,11 +377,13 @@ body {
 .transcript-body::-webkit-scrollbar {
   width: 4px;
 }
+
 .transcript-body::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .transcript-body::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
 }
 
@@ -336,7 +392,7 @@ body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
   z-index: 50;
   display: flex;
@@ -344,22 +400,25 @@ body {
   justify-content: center;
   padding: 1rem;
 }
+
 .modal-content {
   background: #0f172a;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   width: 100%;
   max-width: 440px;
-  box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
   overflow: hidden;
 }
+
 .modal-header {
   padding: 16px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .modal-header h2 {
   font-size: 1rem;
   font-weight: 600;
@@ -367,6 +426,7 @@ body {
   align-items: center;
   gap: 8px;
 }
+
 .modal-close {
   background: transparent;
   border: none;
@@ -376,10 +436,12 @@ body {
   border-radius: 6px;
   transition: background 0.2s;
 }
+
 .modal-close:hover {
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text);
 }
+
 .modal-body {
   padding: 20px;
 }

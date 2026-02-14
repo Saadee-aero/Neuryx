@@ -143,3 +143,123 @@
 2026-02-14 15:35:10,548 | INFO | backend.speech.transcriber_stream | Committed segment: 'Mera naam Sahad hai. Main engineering ka student hoon.' (Reason: silence)
 2026-02-14 15:35:20,491 | INFO | backend.main | Session Stats | RAM: 476.70MB | Avg Inference: 8.116s | Commits: 3
 2026-02-14 15:35:56,555 | INFO | backend.main | Session Stats | RAM: 476.70MB | Avg Inference: 6.967s | Commits: 3
+2026-02-14 17:11:18,991 | INFO | backend.main | Neuryx Backend Starting...
+2026-02-14 17:11:18,991 | INFO | backend.main | Initial Memory Usage: 92.14 MB
+2026-02-14 17:11:18,991 | INFO | backend.speech.model_loader | Loading Whisper Model: small...
+2026-02-14 17:11:21,389 | INFO | backend.speech.model_loader | Model loaded. RAM increased by 338.15 MB. Total: 430.29 MB
+2026-02-14 17:11:21,389 | INFO | backend.main | Model pre-loaded. Memory: 430.29 MB
+2026-02-14 17:11:36,224 | INFO | backend.main | WebSocket connected: 127.0.0.1 | Lang: en
+2026-02-14 17:11:36,224 | INFO | backend.speech.transcriber_stream | Requesting Whisper model 'small'...
+2026-02-14 17:11:36,224 | INFO | backend.speech.transcriber_stream | Model ready in 0.00s
+2026-02-14 17:11:43,273 | INFO | backend.speech.transcriber_stream | Committed segment: 'Hello. Hello.' (Reason: silence)
+2026-02-14 17:11:43,274 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.76s
+2026-02-14 17:11:46,289 | INFO | backend.speech.transcriber_stream | Committed segment: 'I am Saad Ahmad.' (Reason: silence)
+2026-02-14 17:11:46,290 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.70s
+2026-02-14 17:11:52,374 | INFO | backend.speech.transcriber_stream | Committed segment: 'My..' (Reason: silence)
+2026-02-14 17:11:52,374 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.65s
+2026-02-14 17:11:55,676 | INFO | backend.speech.transcriber_stream | Committed segment: 'I am Sadah Ahmad. I'm an Airspace Engineering student.' (Reason: silence)
+2026-02-14 17:11:55,678 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.88s
+2026-02-14 17:11:58,644 | INFO | backend.speech.transcriber_stream | Committed segment: 'I'm studying in 4th semester.' (Reason: silence)
+2026-02-14 17:11:58,645 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.77s
+2026-02-14 17:12:01,868 | INFO | backend.speech.transcriber_stream | Committed segment: 'At Institute of Spastic Neurology, Islamabad.' (Reason: silence)
+2026-02-14 17:12:01,868 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.92s
+2026-02-14 17:12:06,816 | INFO | backend.speech.transcriber_stream | Committed segment: 'I am..' (Reason: silence)
+2026-02-14 17:12:06,817 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.75s
+2026-02-14 17:12:06,817 | INFO | backend.main | Session Stats | RAM: 467.95MB | Avg Inference: 1.039s | Commits: 7
+2026-02-14 17:12:09,990 | INFO | backend.speech.transcriber_stream | Committed segment: 'I am the founder of this software, Nurex.' (Reason: silence)
+2026-02-14 17:12:09,990 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.86s
+2026-02-14 17:12:12,964 | INFO | backend.speech.transcriber_stream | Committed segment: 'Which is a lecture note enter' (Reason: silence)
+2026-02-14 17:12:12,965 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.76s
+2026-02-14 17:12:16,092 | INFO | backend.speech.transcriber_stream | Committed segment: 'This is a brilliant lecture note enter.' (Reason: silence)
+2026-02-14 17:12:16,092 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.82s
+2026-02-14 17:12:19,313 | INFO | backend.speech.transcriber_stream | Committed segment: 'Note down and record and trust.' (Reason: silence)
+2026-02-14 17:12:19,314 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.97s
+2026-02-14 17:12:22,294 | INFO | backend.speech.transcriber_stream | Committed segment: 'Transcribe the whole lecture.' (Reason: silence)
+2026-02-14 17:12:22,294 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.88s
+2026-02-14 17:12:25,328 | INFO | backend.speech.transcriber_stream | Committed segment: 'It points out..' (Reason: silence)
+2026-02-14 17:12:25,329 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.84s
+2026-02-14 17:12:28,418 | INFO | backend.speech.transcriber_stream | Committed segment: 'The main points, like it works under...' (Reason: silence)
+2026-02-14 17:12:28,418 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.86s
+2026-02-14 17:12:31,687 | INFO | backend.speech.transcriber_stream | Committed segment: 'The whole lecture, which it has recorded and....' (Reason: silence)
+2026-02-14 17:12:31,688 | WARNING | backend.speech.transcriber_stream | Slow inference: 2.06s
+2026-02-14 17:12:35,692 | INFO | backend.speech.transcriber_stream | Committed segment: 'It works and analyses the whole lecture.' (Reason: silence)
+2026-02-14 17:12:35,694 | WARNING | backend.speech.transcriber_stream | Slow inference: 2.98s
+2026-02-14 17:12:39,013 | INFO | backend.speech.transcriber_stream | Committed segment: 'This is the whole lecture for important points.' (Reason: silence)
+2026-02-14 17:12:39,014 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.22s
+2026-02-14 17:12:39,016 | INFO | backend.main | Session Stats | RAM: 468.51MB | Avg Inference: 1.533s | Commits: 17
+2026-02-14 17:12:42,259 | INFO | backend.speech.transcriber_stream | Committed segment: 'And point out the important points.' (Reason: silence)
+2026-02-14 17:12:42,260 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.24s
+2026-02-14 17:12:46,352 | INFO | backend.speech.transcriber_stream | Committed segment: 'For easy picking and studying.' (Reason: silence)
+2026-02-14 17:12:46,352 | WARNING | backend.speech.transcriber_stream | Slow inference: 4.09s
+2026-02-14 17:12:49,609 | INFO | backend.speech.transcriber_stream | Committed segment: 'It also pointed out the formulas like..' (Reason: silence)
+2026-02-14 17:12:49,610 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.25s
+2026-02-14 17:12:52,655 | INFO | backend.speech.transcriber_stream | Committed segment: 'I understand the formulas.' (Reason: silence)
+2026-02-14 17:12:52,656 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.04s
+2026-02-14 17:12:55,967 | INFO | backend.speech.transcriber_stream | Committed segment: 'Like a is equal to mc square or nt.' (Reason: silence)
+2026-02-14 17:12:55,968 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.31s
+2026-02-14 17:12:59,031 | INFO | backend.speech.transcriber_stream | Committed segment: 'Like that you know any fixed formulas' (Reason: silence)
+2026-02-14 17:12:59,032 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.06s
+2026-02-14 17:13:02,204 | INFO | backend.speech.transcriber_stream | Committed segment: 'And mathematical formulas and all.' (Reason: silence)
+2026-02-14 17:13:02,206 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.17s
+2026-02-14 17:13:05,328 | INFO | backend.speech.transcriber_stream | Committed segment: 'What kind of formulas?' (Reason: silence)
+2026-02-14 17:13:05,329 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.11s
+2026-02-14 17:13:10,342 | INFO | backend.speech.transcriber_stream | Committed segment: 'And it transforms.' (Reason: silence)
+2026-02-14 17:13:10,342 | WARNING | backend.speech.transcriber_stream | Slow inference: 5.01s
+2026-02-14 17:13:10,345 | INFO | backend.main | Session Stats | RAM: 468.16MB | Avg Inference: 2.097s | Commits: 26
+2026-02-14 17:13:13,392 | INFO | backend.speech.transcriber_stream | Committed segment: 'However, this whole lecture context the whole..' (Reason: silence)
+2026-02-14 17:13:13,394 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.04s
+2026-02-14 17:13:16,507 | INFO | backend.speech.transcriber_stream | Committed segment: 'I would like to give a summary to an AI agent.' (Reason: silence)
+2026-02-14 17:13:16,508 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.11s
+2026-02-14 17:13:19,658 | INFO | backend.speech.transcriber_stream | Committed segment: 'Whichever on the student can use to..' (Reason: silence)
+2026-02-14 17:13:19,659 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.14s
+2026-02-14 17:13:22,871 | INFO | backend.speech.transcriber_stream | Committed segment: 'Uh, question. Ask...' (Reason: silence)
+2026-02-14 17:13:22,872 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.21s
+2026-02-14 17:13:26,052 | INFO | backend.speech.transcriber_stream | Committed segment: 'Ask questions about the lecture from the AI.' (Reason: silence)
+2026-02-14 17:13:26,053 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.17s
+2026-02-14 17:13:29,040 | INFO | backend.speech.transcriber_stream | Committed segment: 'Which here is the full context?' (Reason: silence)
+2026-02-14 17:13:29,041 | WARNING | backend.speech.transcriber_stream | Slow inference: 2.98s
+2026-02-14 17:13:31,901 | INFO | backend.speech.transcriber_stream | Committed segment: 'And get...' (Reason: silence)
+2026-02-14 17:13:31,902 | WARNING | backend.speech.transcriber_stream | Slow inference: 2.85s
+2026-02-14 17:13:35,158 | INFO | backend.speech.transcriber_stream | Committed segment: 'You know, the best out of it.' (Reason: silence)
+2026-02-14 17:13:35,158 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.25s
+2026-02-14 17:13:35,181 | INFO | backend.main | WebSocket disconnected: 127.0.0.1
+2026-02-14 17:13:35,181 | INFO | backend.main | Session Ended. Final Metrics: {'total_chunks': 40, 'avg_inference_time': 2.2441193103790282, 'total_commits': 34, 'avg_stability_cycles': 1.1764705882352942}
+2026-02-14 17:13:35,186 | INFO | backend.main | Cleaned up transcriber session
+2026-02-14 17:14:19,465 | INFO | backend.main | WebSocket connected: 127.0.0.1 | Lang: ur
+2026-02-14 17:14:19,465 | INFO | backend.speech.transcriber_stream | Requesting Whisper model 'small'...
+2026-02-14 17:14:19,465 | INFO | backend.speech.transcriber_stream | Model ready in 0.00s
+2026-02-14 17:14:25,023 | INFO | backend.speech.transcriber_stream | Committed segment: 'ہلو، مینیم.' (Reason: silence)
+2026-02-14 17:14:25,023 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.79s
+2026-02-14 17:14:28,203 | INFO | backend.speech.transcriber_stream | Committed segment: 'سادہ مد، میرا نام سادہ مد ہے۔' (Reason: silence)
+2026-02-14 17:14:28,203 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.90s
+2026-02-14 17:14:31,163 | INFO | backend.speech.transcriber_stream | Committed segment: 'میں ٹھیک ہوں۔' (Reason: silence)
+2026-02-14 17:14:31,163 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.79s
+2026-02-14 17:14:34,256 | INFO | backend.speech.transcriber_stream | Committed segment: 'میں ٹھیک ہوں۔' (Reason: silence)
+2026-02-14 17:14:34,258 | WARNING | backend.speech.transcriber_stream | Slow inference: 1.80s
+2026-02-14 17:14:37,636 | WARNING | backend.speech.transcriber_stream | Slow inference: 2.11s
+2026-02-14 17:14:40,475 | WARNING | backend.speech.transcriber_stream | Slow inference: 2.84s
+2026-02-14 17:14:43,646 | INFO | backend.speech.transcriber_stream | Committed segment: 'اسلام بہت سے سبیس ٹیکنورو جی۔' (Reason: silence)
+2026-02-14 17:14:43,646 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.17s
+2026-02-14 17:14:46,961 | INFO | backend.speech.transcriber_stream | Committed segment: 'میکوڈی سمسٹر میں پہلوں۔' (Reason: silence)
+2026-02-14 17:14:46,961 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.31s
+2026-02-14 17:14:50,281 | INFO | backend.speech.transcriber_stream | Committed segment: 'میں ٹھیک ہوں۔' (Reason: silence)
+2026-02-14 17:14:50,281 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.32s
+2026-02-14 17:14:50,283 | INFO | backend.main | Session Stats | RAM: 467.89MB | Avg Inference: 2.447s | Commits: 7
+2026-02-14 17:14:53,387 | INFO | backend.speech.transcriber_stream | Committed segment: 'اس سفت فیر کو میں نے بلایا ہے۔' (Reason: silence)
+2026-02-14 17:14:53,388 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.10s
+2026-02-14 17:14:53,420 | INFO | backend.main | WebSocket disconnected: 127.0.0.1
+2026-02-14 17:14:53,421 | INFO | backend.main | Session Ended. Final Metrics: {'total_chunks': 11, 'avg_inference_time': 2.2849243120713667, 'total_commits': 8, 'avg_stability_cycles': 1.375}
+2026-02-14 17:14:53,421 | INFO | backend.main | Cleaned up transcriber session
+2026-02-14 17:14:55,819 | INFO | backend.main | WebSocket connected: 127.0.0.1 | Lang: 
+2026-02-14 17:14:55,819 | INFO | backend.speech.transcriber_stream | Requesting Whisper model 'small'...
+2026-02-14 17:14:55,819 | INFO | backend.speech.transcriber_stream | Model ready in 0.00s
+2026-02-14 17:15:02,852 | INFO | backend.speech.transcriber_stream | Committed segment: 'Hello.' (Reason: silence)
+2026-02-14 17:15:02,852 | WARNING | backend.speech.transcriber_stream | Slow inference: 3.86s
+2026-02-14 17:15:08,564 | INFO | backend.speech.transcriber_stream | Committed segment: 'Yo, mera naam saad Ahmed hai.' (Reason: silence)
+2026-02-14 17:15:08,564 | WARNING | backend.speech.transcriber_stream | Slow inference: 5.71s
+2026-02-14 17:15:14,050 | INFO | backend.speech.transcriber_stream | Committed segment: 'Main airspace engineering karo. Institute of Space..' (Reason: silence)
+2026-02-14 17:15:14,052 | WARNING | backend.speech.transcriber_stream | Slow inference: 5.48s
+2026-02-14 17:15:19,676 | INFO | backend.speech.transcriber_stream | Committed segment: 'ٹیکنلو جی اسلام بات سے...' (Reason: silence)
+2026-02-14 17:15:19,678 | WARNING | backend.speech.transcriber_stream | Slow inference: 5.62s
+2026-02-14 17:15:25,358 | INFO | backend.speech.transcriber_stream | Committed segment: 'ڈینرینگ کا چوٹر سمسٹر ہی میکنے' (Reason: silence)
+2026-02-14 17:15:25,358 | WARNING | backend.speech.transcriber_stream | Slow inference: 5.67s

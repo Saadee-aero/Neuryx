@@ -5,8 +5,8 @@ import { ModelManager } from './components/ModelManager'
 
 const LANGUAGES = [
   { code: 'en', name: 'English', prompt: 'Hello. How are you? I am fine.' },
-  { code: 'ur', name: 'اردو', prompt: 'السلام علیکم۔ کیا حال ہے؟ میں ٹھیک ہوں۔ پاکستان زندہ باد۔' },
-  { code: '', name: 'Roman Urdu', prompt: 'Yeh Roman Urdu hai. English letters mein likho. Desi style mein baat karo. Example: Kya haal hai bhai?' },
+  { code: 'ur', name: 'اردو', prompt: 'السلام علیکم۔ میں ٹھیک ہوں۔ پاکستان۔ اردو زبان۔' },
+  { code: '', name: 'Roman Urdu', prompt: 'Transliterate into Roman Urdu (Latin script). Do not translate. Do not use Urdu script. Example: Kya haal hai? Main theek hoon.' },
 ]
 
 function App() {
@@ -235,9 +235,12 @@ function App() {
             <span className="transcript-label">Transcript</span>
             <span className="lang-badge">{selectedLang.name}</span>
           </div>
-          <div className="transcript-body">
+          {/* Live Transcript */}
+          <div className={`flex-1 p-6 overflow-y-auto custom-scrollbar ${selectedLang.code === 'ur' ? 'font-urdu' : ''}`}>
             {liveText ? (
-              <p className="transcript-text">{liveText}</p>
+              <p className={`text-2xl leading-relaxed ${isRecording ? 'animate-pulse-subtle' : ''} ${selectedLang.code === 'ur' ? 'text-right' : 'text-left'}`}>
+                {liveText}
+              </p>
             ) : (
               <p className="transcript-placeholder">
                 {isRecording ? 'Listening...' : 'Press the microphone to start'}
