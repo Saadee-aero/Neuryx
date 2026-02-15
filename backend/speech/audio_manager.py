@@ -33,15 +33,16 @@ class AudioManager:
         
         self.frames = []
         self.recording = True
+        self.start_time = datetime.now()
         try:
             self.stream = sd.InputStream(
                 samplerate=self.sample_rate,
                 channels=self.channels,
-                dtype='int16',
+                dtype='float32',
                 callback=self._callback
             )
             self.stream.start()
-            logger.info("Recording started...")
+            logger.info("Recording started (float32, 16kHz, mono)...")
             return {"status": "started"}
         except Exception as e:
             logger.error(f"Failed to start audio stream: {e}")
@@ -58,6 +59,10 @@ class AudioManager:
             self.stream.stop()
             self.stream.close()
             
+            duration = (datetime.now() - self.start_time).total_seconds()
+            if duration > 7200: # 2 hours
+                 logger.warning(f"⚠️ Long recording detected: {duration/3600:.2f} hours. File size may be large.")
+            
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = self.output_dir / f"recording_{timestamp}.wav"
             
@@ -68,7 +73,7 @@ class AudioManager:
             recording_data = np.concatenate(self.frames, axis=0)
             write(filename, self.sample_rate, recording_data)
             
-            logger.info(f"Recording saved to {filename}")
+            logger.info(f"Recording saved to {filename} (Duration: {duration:.2f}s)")
             self.current_file = str(filename)
             return {"status": "stopped", "file": str(filename)}
         except Exception as e:

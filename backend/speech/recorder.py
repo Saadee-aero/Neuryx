@@ -17,7 +17,7 @@ def record_audio(duration=DURATION, output_path=None):
         int(duration * SAMPLE_RATE),
         samplerate=SAMPLE_RATE,
         channels=CHANNELS,
-        dtype="int16"
+        dtype="float32"
     )
     sd.wait()
 

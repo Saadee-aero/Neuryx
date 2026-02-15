@@ -1,11 +1,11 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 import os
 from backend.speech.audio_manager import AudioManager
 from backend.speech.transcriber import transcribe_audio
-from backend.speech.transcriber_stream import StreamingTranscriber
+# from backend.speech.transcriber_stream import StreamingTranscriber # REMOVED
 from backend.routers import models
 from backend.core.logger import get_logger
 from backend.core.system_monitor import get_memory_usage_mb
@@ -80,93 +80,85 @@ def stop_recording():
         logger.error(f"Failed to stop/transcribe: {e}")
         return {"status": "error", "message": str(e)}
 
-@app.websocket("/stream")
-async def websocket_endpoint(
-    websocket: WebSocket, 
-    language: str = Query("en"), 
-    prompt: str = Query(None)
+@app.post("/transcribe")
+async def transcribe_file(
+    file: UploadFile = File(...),
+    language: str = Form("en")
 ):
     """
-    WebSocket endpoint for real-time transcription.
-    Expects raw PCM audio bytes (float32, 16kHz, mono) from the client.
-    Query params: language (e.g., 'en', 'ur'), prompt (for guiding output).
+    Batch transcription endpoint.
+    Accepts an audio file, saves it, and runs full-accuracy transcription.
     """
-    await websocket.accept()
-    client_host = websocket.client.host
-    logger.info(f"WebSocket connected: {client_host} | Lang: {language}")
-    
-    # Initialize transcriber with selected language and prompt
     try:
-        transcriber = StreamingTranscriber(
-            language=language, 
-            initial_prompt=prompt if prompt else None
+        # 1. Save File
+        upload_dir = os.path.join(os.path.dirname(__file__), "recordings")
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # Create unique filename
+        filename = f"{int(time.time())}_{file.filename}"
+        file_path = os.path.join(upload_dir, filename)
+        
+        logger.info(f"Received file for transcription: {filename} | Lang: {language}")
+        
+        with open(file_path, "wb") as buffer:
+            # Write in chunks to handle large files
+            while content := await file.read(1024 * 1024): # 1MB chunks
+                buffer.write(content)
+                
+        # 2. Load Model
+        from backend.speech.model_loader import ModelLoader
+        # Use 'small' model by default
+        model = ModelLoader.get_model("small")
+        
+        # 3. Transcribe (Accuracy Profile)
+        # BATCH MODE SETTINGS
+        # beam_size=5, best_of=3, temperature=0.0
+        start_time = time.time()
+        
+        segments, info = model.transcribe(
+            file_path,
+            language=None if language == "auto" else language,
+            beam_size=5,
+            best_of=3,
+            temperature=0.0,
+            condition_on_previous_text=True,
+            vad_filter=True,
+            vad_parameters=dict(min_silence_duration_ms=500)
         )
         
-        # Enable auto-save
-        import datetime
-        import os
-        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        os.makedirs("transcripts", exist_ok=True)
-        filename = f"transcripts/transcript_{timestamp}.txt"
-        transcriber.set_file_writer(filename)
+        # 4. Format Response
+        result_segments = []
+        full_text_parts = []
         
-    except Exception as e:
-        logger.error(f"Failed to initialize transcriber: {e}")
-        await websocket.close(code=1011)
-        return
-    
-    stream_active = True
-    last_log_time = time.time()
-    last_sent_text = ""
-    
-    try:
-        while stream_active:
-            # Periodic logging (every 30s)
-            if time.time() - last_log_time > 30:
-                mem_mb = get_memory_usage_mb()
-                metrics = transcriber.get_metrics_summary()
-                logger.info(
-                    f"Session Stats | RAM: {mem_mb:.2f}MB | "
-                    f"Avg Inference: {metrics.get('avg_inference_time', 0):.3f}s | "
-                    f"Commits: {metrics.get('total_commits', 0)}"
-                )
-                last_log_time = time.time()
+        for seg in segments:
+            text = seg.text.strip()
+            full_text_parts.append(text)
+            result_segments.append({
+                "text": text,
+                "start": seg.start,
+                "end": seg.end
+            })
+            
+        full_text = " ".join(full_text_parts)
+        duration = time.time() - start_time
+        
+        logger.info(f"Transcription complete in {duration:.2f}s")
+        
+        return JSONResponse({
+            "status": "success",
+            "language": info.language,
+            "duration": info.duration,
+            "processing_time": duration,
+            "full_text": full_text,
+            "segments": result_segments
+        })
 
-            # Receive audio chunk (bytes)
-            data = await websocket.receive_bytes()
-            
-            # Convert bytes to numpy array (float32)
-            audio_chunk = np.frombuffer(data, dtype=np.float32)
-            
-            transcriber.add_chunk(audio_chunk)
-            
-            result = transcriber.transcribe()
-            
-            if result:
-                committed_text = " ".join([seg["text"] for seg in result["committed"]])
-                partial_text = result["partial"]
-                full_display_text = f"{committed_text} {partial_text}".strip()
-                
-                # Only send if text actually changed
-                if full_display_text and full_display_text != last_sent_text:
-                    await websocket.send_text(full_display_text)
-                    last_sent_text = full_display_text
-                
-    except WebSocketDisconnect:
-        logger.info(f"WebSocket disconnected: {client_host}")
     except Exception as e:
-        logger.error(f"WebSocket error: {e}", exc_info=True)
-    finally:
-        stream_active = False
-        metrics = transcriber.get_metrics_summary()
-        logger.info(f"Session Ended. Final Metrics: {metrics}")
-        
-        # Close file writer
-        transcriber.close()
-        
-        # Explicit clean up if needed
-        del transcriber
-        logger.info("Cleaned up transcriber session")
+        logger.error(f"Transcription failed: {e}", exc_info=True)
+        return JSONResponse(
+            status_code=500,
+            content={"status": "error", "message": str(e)}
+        )
 
 # Mount static assets AFTER all API/WS routes (so routes take priority)
 if os.path.isdir(FRONTEND_DIR):

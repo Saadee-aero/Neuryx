@@ -16,115 +16,76 @@ function App() {
   const [selectedLang, setSelectedLang] = useState(LANGUAGES[0])
   const [showSettings, setShowSettings] = useState(false)
 
-  // Refs for streaming
-  const socketRef = useRef<WebSocket | null>(null)
-  const audioContextRef = useRef<AudioContext | null>(null)
-  const processorRef = useRef<ScriptProcessorNode | null>(null)
-  const mediaStreamRef = useRef<MediaStream | null>(null)
-
-  const cleanupAudio = useCallback(() => {
-    if (processorRef.current) {
-      processorRef.current.disconnect()
-      processorRef.current = null
-    }
-    if (audioContextRef.current) {
-      audioContextRef.current.close()
-      audioContextRef.current = null
-    }
-    if (mediaStreamRef.current) {
-      mediaStreamRef.current.getTracks().forEach(track => track.stop())
-      mediaStreamRef.current = null
-    }
-  }, [])
+  // Refs for batch recording
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const chunksRef = useRef<Blob[]>([])
 
   const startRecording = async () => {
     try {
-      setStatus('Connecting...')
       setLiveText('')
+      chunksRef.current = []
 
-      // Build WebSocket URL using Vite proxy (relative path)
-      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      const params = new URLSearchParams({
-        language: selectedLang.code,
-        ...(selectedLang.prompt ? { prompt: selectedLang.prompt } : {})
-      })
-      const wsUrl = `${wsProtocol}//${window.location.host}/stream?${params.toString()}`
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const mediaRecorder = new MediaRecorder(stream)
+      mediaRecorderRef.current = mediaRecorder
 
-      const socket = new WebSocket(wsUrl)
-      socket.binaryType = 'arraybuffer'
-      socketRef.current = socket
-
-      socket.onopen = async () => {
-        setStatus('Listening...')
-        setIsRecording(true)
-
-        try {
-          // Create AudioContext at 16kHz for Whisper
-          const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 })
-          audioContextRef.current = audioCtx
-
-          const stream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-              channelCount: 1,
-              echoCancellation: true,
-              noiseSuppression: true,
-            }
-          })
-          mediaStreamRef.current = stream
-
-          const source = audioCtx.createMediaStreamSource(stream)
-
-          // 4096 frames @ 16kHz ≈ 0.256s per chunk
-          const processor = audioCtx.createScriptProcessor(4096, 1, 1)
-          processorRef.current = processor
-
-          processor.onaudioprocess = (e) => {
-            if (socket.readyState === WebSocket.OPEN) {
-              const inputData = e.inputBuffer.getChannelData(0)
-              // Send raw float32 PCM bytes
-              socket.send(inputData.buffer)
-            }
-          }
-
-          source.connect(processor)
-          processor.connect(audioCtx.destination)
-        } catch (err) {
-          console.error('Microphone error:', err)
-          setStatus('Microphone blocked')
-          socket.close()
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunksRef.current.push(e.data)
         }
       }
 
-      socket.onmessage = (event) => {
-        setLiveText(event.data)
+      mediaRecorder.onstop = async () => {
+        setStatus('Processing...')
+
+        // Create Audio Blob
+        const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' })
+
+        // Prepare Upload
+        const formData = new FormData()
+        formData.append('file', audioBlob, 'recording.webm')
+        formData.append('language', selectedLang.code)
+
+        try {
+          const response = await fetch('/transcribe', {
+            method: 'POST',
+            body: formData,
+          })
+
+          const result = await response.json()
+
+          if (result.status === 'success') {
+            setLiveText(result.full_text)
+            setStatus(`Done (${result.language}, ${result.duration.toFixed(1)}s)`)
+          } else {
+            setStatus('Error processing')
+            setLiveText(`Error: ${result.message}`)
+          }
+        } catch (error) {
+          console.error('Upload failed:', error)
+          setStatus('Upload failed')
+        } finally {
+          setIsRecording(false)
+          // Stop all tracks
+          stream.getTracks().forEach(track => track.stop())
+        }
       }
 
-      socket.onerror = () => {
-        setStatus('Connection failed')
-        setIsRecording(false)
-        cleanupAudio()
-      }
+      mediaRecorder.start()
+      setIsRecording(true)
+      setStatus('Recording...')
 
-      socket.onclose = () => {
-        setIsRecording(false)
-        setStatus('Tap to speak')
-        cleanupAudio()
-      }
-
-    } catch (e) {
-      console.error(e)
-      setStatus('Error')
+    } catch (err) {
+      console.error('Microphone error:', err)
+      setStatus('Microphone blocked')
     }
   }
 
   const stopRecording = () => {
-    if (socketRef.current) {
-      socketRef.current.close()
-      socketRef.current = null
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop()
+      // UI update happens in onstop
     }
-    cleanupAudio()
-    setIsRecording(false)
-    setStatus('Tap to speak')
   }
 
   const toggleRecording = () => {
@@ -235,15 +196,15 @@ function App() {
             <span className="transcript-label">Transcript</span>
             <span className="lang-badge">{selectedLang.name}</span>
           </div>
-          {/* Live Transcript */}
+          {/* Result Transcript */}
           <div className={`flex-1 p-6 overflow-y-auto custom-scrollbar ${selectedLang.code === 'ur' ? 'font-urdu' : ''}`}>
             {liveText ? (
-              <p className={`text-2xl leading-relaxed ${isRecording ? 'animate-pulse-subtle' : ''} ${selectedLang.code === 'ur' ? 'text-right' : 'text-left'}`}>
+              <p className={`text-2xl leading-relaxed ${isRecording ? 'opacity-50' : ''} ${selectedLang.code === 'ur' ? 'text-right' : 'text-left'}`}>
                 {liveText}
               </p>
             ) : (
               <p className="transcript-placeholder">
-                {isRecording ? 'Listening...' : 'Press the microphone to start'}
+                {isRecording ? 'Recording linked to Batch Engine...' : 'Press microphone to record'}
               </p>
             )}
           </div>
@@ -252,5 +213,4 @@ function App() {
     </div>
   )
 }
-
 export default App

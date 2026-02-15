@@ -12,7 +12,11 @@ def transcribe_audio(audio_path: str) -> str:
             audio_path,
             language="en",
             beam_size=5,
-            condition_on_previous_text=False
+            best_of=3,
+            temperature=0.0,
+            condition_on_previous_text=True,
+            vad_filter=True,
+            vad_parameters=dict(min_silence_duration_ms=500)
         )
     
         text = []
