@@ -919,3 +919,12 @@
 2026-02-16 11:30:32,555 | INFO | backend.main | Transcription complete in 5.05s
 2026-02-16 11:30:48,085 | INFO | backend.main | Received file for transcription: 1771223448_recording.webm | Lang: en
 2026-02-16 11:30:52,178 | INFO | backend.main | Transcription complete in 4.09s
+2026-02-16 11:41:49,160 | INFO | backend.main | Neuryx Backend Starting...
+2026-02-16 11:41:49,160 | INFO | backend.main | Initial Memory Usage: 93.90 MB
+2026-02-16 11:41:49,162 | INFO | backend.speech.model_loader | Loading Whisper Model: small...
+2026-02-16 11:41:54,468 | INFO | backend.speech.model_loader | Model loaded. RAM increased by 337.15 MB. Total: 431.08 MB
+2026-02-16 11:41:54,468 | INFO | backend.main | Model pre-loaded. Memory: 431.08 MB
+2026-02-16 11:42:15,261 | INFO | backend.main | Received file for transcription: 1771224135_recording.webm | Lang: en
+2026-02-16 11:42:19,678 | INFO | backend.main | Transcription complete in 4.42s
+2026-02-16 11:42:51,486 | INFO | backend.main | Received file for transcription: 1771224171_recording.webm | Lang: ur
+2026-02-16 11:42:56,133 | INFO | backend.main | Transcription complete in 4.63s
