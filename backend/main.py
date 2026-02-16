@@ -127,22 +127,39 @@ async def transcribe_file(
         )
         
         # 4. Format Response
+        # 4. Format Response & Transliterate
+        from backend.nlp.transliterator import RomanTransliterator
+        
+        # Easy toggle for Roman Output
+        ROMAN_OUTPUT_ENABLED = True
+        
+        transliterator = RomanTransliterator()
+
         result_segments = []
-        full_text_parts = []
+        full_text_list = []
         
         for seg in segments:
-            text = seg.text.strip()
-            full_text_parts.append(text)
+            original_text = seg.text.strip()
+            
+            if ROMAN_OUTPUT_ENABLED:
+                roman_text = transliterator.transliterate_text(original_text)
+            else:
+                roman_text = original_text
+            
+            full_text_list.append(roman_text)
             result_segments.append({
-                "text": text,
+                "text": roman_text,
                 "start": seg.start,
-                "end": seg.end
+                "end": seg.end,
+                "original_text": original_text 
             })
             
-        full_text = " ".join(full_text_parts)
+        full_text = " ".join(full_text_list)
         duration = time.time() - start_time
         
         logger.info(f"Transcription complete in {duration:.2f}s")
+        if ROMAN_OUTPUT_ENABLED:
+             logger.info("Transliteration applied (Urdu -> Roman)")
         
         return JSONResponse({
             "status": "success",

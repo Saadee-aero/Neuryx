@@ -1,19 +1,13 @@
 import { useState, useRef } from 'react'
-import { Mic, Square, Settings, X } from 'lucide-react'
+import { Mic, Square, Settings, X, Sparkles } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ModelManager } from './components/ModelManager'
-
-const LANGUAGES = [
-  { code: 'en', name: 'English', prompt: 'Hello. Technical terms. Aerospace. Engineering.' },
-  { code: 'ur', name: 'اردو', prompt: 'اردو زبان۔ پاکستان۔ انسٹیٹیوٹ آف اسپیس ٹیکنالوجی۔ ایرو اسپیس انجینئرنگ۔' },
-  { code: '', name: 'Roman Urdu', prompt: 'Roman Urdu. English letters only. Hindi Urdu mix. Kya haal hai. Aerospace Engineering.' },
-]
 
 function App() {
   const [isRecording, setIsRecording] = useState(false)
   const [status, setStatus] = useState('Tap to speak')
   const [liveText, setLiveText] = useState('')
-  const [selectedLang, setSelectedLang] = useState(LANGUAGES[0])
+  const [detectedLang, setDetectedLang] = useState<string | null>(null)
   const [showSettings, setShowSettings] = useState(false)
 
   // Refs for batch recording
@@ -23,6 +17,7 @@ function App() {
   const startRecording = async () => {
     try {
       setLiveText('')
+      setDetectedLang(null)
       chunksRef.current = []
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
@@ -44,7 +39,7 @@ function App() {
         // Prepare Upload
         const formData = new FormData()
         formData.append('file', audioBlob, 'recording.webm')
-        formData.append('language', selectedLang.code)
+        formData.append('language', 'auto') // Default to Auto
 
         try {
           const response = await fetch('/transcribe', {
@@ -56,6 +51,8 @@ function App() {
 
           if (result.status === 'success') {
             setLiveText(result.full_text)
+            const langName = result.language === 'ur' ? 'Urdu (Romanized)' : result.language
+            setDetectedLang(langName)
             setStatus(`Done (${result.language}, ${result.duration.toFixed(1)}s)`)
           } else {
             setStatus('Error processing')
@@ -84,7 +81,6 @@ function App() {
   const stopRecording = () => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop()
-      // UI update happens in onstop
     }
   }
 
@@ -151,18 +147,14 @@ function App() {
       {/* Main Card */}
       <main className="main-card">
 
-        {/* Language Selector */}
-        <div className="lang-selector">
-          {LANGUAGES.map(lang => (
-            <button
-              key={lang.name}
-              onClick={() => { if (!isRecording) setSelectedLang(lang) }}
-              className={`lang-btn ${selectedLang.name === lang.name ? 'active' : ''}`}
-              disabled={isRecording}
-            >
-              {lang.name}
-            </button>
-          ))}
+        {/* Status Indicator (previously Lang Selector area) */}
+        <div className="h-12 flex items-center justify-center">
+          {isRecording && (
+            <div className="flex items-center space-x-2 text-primary/80 animate-pulse">
+              <div className="w-2 h-2 rounded-full bg-red-500" />
+              <span className="text-sm font-light tracking-wide uppercase">Listening...</span>
+            </div>
+          )}
         </div>
 
         {/* Big Mic Button */}
@@ -194,12 +186,16 @@ function App() {
         <div className="transcript-area">
           <div className="transcript-header">
             <span className="transcript-label">Transcript</span>
-            <span className="lang-badge">{selectedLang.name}</span>
+            {detectedLang && (
+              <span className="lang-badge flex items-center gap-1">
+                <Sparkles size={12} /> {detectedLang}
+              </span>
+            )}
           </div>
           {/* Result Transcript */}
-          <div className={`flex-1 p-6 overflow-y-auto custom-scrollbar ${selectedLang.code === 'ur' ? 'font-urdu' : ''}`}>
+          <div className={`flex-1 p-6 overflow-y-auto custom-scrollbar`}>
             {liveText ? (
-              <p className={`text-2xl leading-relaxed ${isRecording ? 'opacity-50' : ''} ${selectedLang.code === 'ur' ? 'text-right' : 'text-left'}`}>
+              <p className={`text-2xl leading-relaxed ${isRecording ? 'opacity-50' : ''} text-left`}>
                 {liveText}
               </p>
             ) : (
@@ -213,4 +209,5 @@ function App() {
     </div>
   )
 }
+
 export default App
