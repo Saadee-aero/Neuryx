@@ -8,3 +8,4 @@ scipy
 pywebview
 websockets
 
+python-multipart
